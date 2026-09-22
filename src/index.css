@@ -220,11 +220,18 @@ label {
 }
 
 /* Two-column pane layout (session logs, lesson plans): a main work area on
-   the left and a scrollable history sidebar on the right. Wraps to a single
-   stacked column on narrow viewports instead of a media query, since the
-   two pieces have a natural minimum width already. */
+   the left and a scrollable history sidebar docked to the actual right edge
+   of the browser window. .tab-shell centers everything else at 960px, so
+   this "full-bleed" trick (100vw + negative-equivalent margins) breaks just
+   this row out of that constraint; margin-left: auto on the sidebar then
+   pushes it the rest of the way to the window edge. */
 
 .pane-layout {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0 1rem;
+  box-sizing: border-box;
   display: flex;
   align-items: flex-start;
   gap: 1.5rem;
@@ -232,16 +239,35 @@ label {
 }
 
 .pane-main {
-  flex: 3 1 320px;
+  flex: 0 1 620px;
   min-width: 260px;
 }
 
 .pane-sidebar {
-  flex: 2 1 280px;
+  flex: 0 0 340px;
+  margin-left: auto;
   max-width: 380px;
   max-height: min(70vh, 40rem);
   overflow-y: auto;
   padding-right: 0.25rem;
+}
+
+/* Below this width there's no room to dock the sidebar separately from the
+   main column, so drop the full-bleed trick and stack normally. */
+@media (max-width: 700px) {
+  .pane-layout {
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+  }
+
+  .pane-main,
+  .pane-sidebar {
+    flex: 1 1 100%;
+    margin-left: 0;
+    max-width: none;
+  }
 }
 
 /* Logs */
