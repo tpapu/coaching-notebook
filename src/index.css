@@ -219,53 +219,60 @@ label {
   margin-bottom: 1rem;
 }
 
-/* Two-column pane layout (session logs, lesson plans): a main work area on
-   the left and a scrollable history sidebar docked to the actual right edge
-   of the browser window. .tab-shell centers everything else at 960px, so
-   this "full-bleed" trick (100vw + negative-equivalent margins) breaks just
-   this row out of that constraint; margin-left: auto on the sidebar then
-   pushes it the rest of the way to the window edge. */
+/* Two-column pane layout (session logs, lesson plans). The main work area
+   (form / generate+draft) stays exactly where it always sat, in .tab-shell's
+   normal centered 960px flow — no width tricks, so it lines up with the tab
+   bar and header above it.
 
-.pane-layout {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding: 0 1rem;
-  box-sizing: border-box;
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
+   The history sidebar instead docks as a floating panel pinned to the
+   top-right corner of the actual browser window (position: fixed), which is
+   the only way to reach the real window edge without it having to match
+   .tab-shell's centering math. Only done on screens wide enough that this
+   can't overlap the centered column (see the 1400px breakpoint below);
+   narrower screens fall back to a normal side-by-side row within the flow. */
 
 .pane-main {
-  flex: 0 1 620px;
-  min-width: 260px;
+  width: 100%;
 }
 
 .pane-sidebar {
-  flex: 0 0 340px;
-  margin-left: auto;
-  max-width: 380px;
+  position: fixed;
+  /* Clears the app header + Sign out button, which sit in this same corner. */
+  top: 6rem;
+  right: 1.5rem;
+  width: 320px;
   max-height: min(70vh, 40rem);
   overflow-y: auto;
   padding-right: 0.25rem;
+  z-index: 5;
 }
 
-/* Below this width there's no room to dock the sidebar separately from the
-   main column, so drop the full-bleed trick and stack normally. */
-@media (max-width: 700px) {
+@media (max-width: 1400px) {
   .pane-layout {
-    width: auto;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-wrap: wrap;
   }
 
+  .pane-main {
+    width: auto;
+    flex: 3 1 320px;
+    min-width: 260px;
+  }
+
+  .pane-sidebar {
+    position: static;
+    width: auto;
+    flex: 2 1 280px;
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 700px) {
   .pane-main,
   .pane-sidebar {
     flex: 1 1 100%;
-    margin-left: 0;
     max-width: none;
   }
 }
