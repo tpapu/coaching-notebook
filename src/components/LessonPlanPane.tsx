@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent } from 'react'
 import type { LessonPlan } from '../types'
 import { generateLessonPlan } from '../lib/coachAi'
 import { listLessonPlans, saveLessonPlan } from '../lib/db'
+import { centerOnOpen } from '../lib/scroll'
 
 export function LessonPlanPane({ studentId }: { studentId: string }) {
   const [pastPlans, setPastPlans] = useState<LessonPlan[]>([])
@@ -50,35 +51,37 @@ export function LessonPlanPane({ studentId }: { studentId: string }) {
   }
 
   return (
-    <section className="lesson-plan-pane">
-      <div className="lesson-plan-header">
-        <button onClick={handleGenerate} disabled={generating}>
-          {generating ? 'Generating…' : 'Generate lesson plan'}
-        </button>
+    <section className="lesson-plan-pane pane-layout">
+      <div className="pane-main">
+        <div className="lesson-plan-header">
+          <button onClick={handleGenerate} disabled={generating}>
+            {generating ? 'Generating…' : 'Generate lesson plan'}
+          </button>
+        </div>
+
+        {error && <p className="error">{error}</p>}
+
+        {draft !== null && (
+          <div className="card lesson-plan-draft">
+            <h3>Draft plan</h3>
+            <textarea
+              rows={16}
+              value={draft}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                setDraft(e.target.value)
+                setSaved(false)
+              }}
+            />
+            <div className="lesson-plan-actions">
+              <button onClick={handleSave} disabled={saving || saved}>
+                {saved ? 'Saved' : saving ? 'Saving…' : 'Save to lesson plans'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {error && <p className="error">{error}</p>}
-
-      {draft !== null && (
-        <div className="card lesson-plan-draft">
-          <h3>Draft plan</h3>
-          <textarea
-            rows={16}
-            value={draft}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-              setDraft(e.target.value)
-              setSaved(false)
-            }}
-          />
-          <div className="lesson-plan-actions">
-            <button onClick={handleSave} disabled={saving || saved}>
-              {saved ? 'Saved' : saving ? 'Saving…' : 'Save to lesson plans'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="lesson-plan-history">
+      <div className="pane-sidebar">
         <h3>Past plans</h3>
         {pastPlans.length === 0 ? (
           <p className="muted">No saved lesson plans yet.</p>
@@ -87,7 +90,7 @@ export function LessonPlanPane({ studentId }: { studentId: string }) {
             {pastPlans.map((plan, index) => (
               <li key={plan.id} className="card">
                 {/* Most recent open by default so saving feels confirmed; older ones stay collapsed to avoid clutter. */}
-                <details open={index === 0}>
+                <details open={index === 0} onToggle={centerOnOpen}>
                   <summary className="lesson-plan-list-header">
                     <span>{new Date(plan.generated_at).toLocaleDateString()}</span>
                     {plan.used && <span className="pill pill-muted">Used</span>}

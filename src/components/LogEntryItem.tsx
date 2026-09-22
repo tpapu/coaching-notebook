@@ -1,5 +1,6 @@
 import type { SessionLog } from '../types'
 import { formatSessionDate } from '../lib/date'
+import { centerOnOpen } from '../lib/scroll'
 
 export function LogEntryItem({ log, defaultOpen = false }: { log: SessionLog; defaultOpen?: boolean }) {
   // Format in UTC (not local time) so this matches the calendar day the
@@ -8,7 +9,7 @@ export function LogEntryItem({ log, defaultOpen = false }: { log: SessionLog; de
 
   return (
     <li className="log-entry card">
-      <details open={defaultOpen}>
+      <details open={defaultOpen} onToggle={centerOnOpen}>
         <summary className="log-entry-header">
           <span className="log-entry-date">{date}</span>
           {log.tags && log.tags.length > 0 && (

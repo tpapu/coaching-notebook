@@ -39,10 +39,15 @@ export function LogPane({ studentId, onLogSaved }: { studentId: string; onLogSav
   }
 
   return (
-    <section className="log-pane">
-      <LogEntryForm onSubmit={handleAdd} />
-      {error && <p className="error">{error}</p>}
-      {loading ? <p className="muted">Loading session logs…</p> : <LogEntryList logs={logs} />}
+    <section className="log-pane pane-layout">
+      <div className="pane-main">
+        <LogEntryForm onSubmit={handleAdd} />
+        {error && <p className="error">{error}</p>}
+      </div>
+      <div className="pane-sidebar">
+        <h3>Session history</h3>
+        {loading ? <p className="muted">Loading session logs…</p> : <LogEntryList logs={logs} />}
+      </div>
     </section>
   )
 }

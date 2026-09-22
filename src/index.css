@@ -219,6 +219,31 @@ label {
   margin-bottom: 1rem;
 }
 
+/* Two-column pane layout (session logs, lesson plans): a main work area on
+   the left and a scrollable history sidebar on the right. Wraps to a single
+   stacked column on narrow viewports instead of a media query, since the
+   two pieces have a natural minimum width already. */
+
+.pane-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pane-main {
+  flex: 3 1 320px;
+  min-width: 260px;
+}
+
+.pane-sidebar {
+  flex: 2 1 280px;
+  max-width: 380px;
+  max-height: min(70vh, 40rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
 /* Logs */
 
 .log-entry-list {
