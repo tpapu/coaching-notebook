@@ -1,0 +1,499 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --surface: #ffffff;
+  --border: #e0ddd6;
+  --text: #23231f;
+  --muted: #6b6a63;
+  --accent: #1f6f50;
+  --accent-hover: #17593f;
+  --error: #b3261e;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+h1, h2, h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: white;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--accent);
+}
+
+button.small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+input, textarea {
+  font: inherit;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.error {
+  color: var(--error);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.centered-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+}
+
+.pill {
+  display: inline-block;
+  background: #e6f2ec;
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.pill-muted {
+  background: #eee;
+  color: var(--muted);
+}
+
+.pill-tag {
+  margin-left: 0.25rem;
+}
+
+/* Layout */
+
+.tab-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.student-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tab-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tab-group-right {
+  margin-left: auto;
+}
+
+.tab {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.tab-active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.tab-add {
+  border-style: dashed;
+}
+
+.add-student-form {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.add-student-form input {
+  width: 160px;
+}
+
+.archived-students {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.archived-students summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.student-header-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.student-notes {
+  margin-top: 0.25rem;
+}
+
+.student-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.sub-tab-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Logs */
+
+.log-entry-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.log-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.log-entry-date {
+  font-weight: 600;
+}
+
+.log-entry-content {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Chat */
+
+.message-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.message {
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  max-width: 85%;
+}
+
+.message p {
+  margin: 0.2rem 0 0 0;
+  white-space: pre-wrap;
+}
+
+.message-role {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.message-user {
+  background: #eef3ef;
+  align-self: flex-end;
+}
+
+.message-assistant {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  align-self: flex-start;
+}
+
+.message-input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.message-input textarea {
+  flex: 1;
+}
+
+.suggested-insight-banner {
+  border-color: var(--accent);
+  background: #f2f8f5;
+}
+
+.suggested-insight-label {
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.suggested-insight-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Lesson plan */
+
+.lesson-plan-header {
+  margin-bottom: 1rem;
+}
+
+.lesson-plan-draft textarea {
+  font-family: inherit;
+}
+
+.lesson-plan-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.lesson-plan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lesson-plan-list-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.lesson-plan-content-preview {
+  margin: 0;
+  white-space: pre-wrap;
+  max-height: 6rem;
+  overflow: hidden;
+}
+
+/* Hover for outlined controls: the global button:hover fills with dark green,
+   which is unreadable behind the dark/accent text these use. */
+
+button.secondary:hover:not(:disabled),
+.tab:hover:not(:disabled):not(.tab-active),
+.day-chip:hover:not(:disabled):not(.day-chip-active),
+.day-toggle:hover:not(:disabled):not(.day-toggle-on) {
+  background: #e6f2ec;
+  color: var(--accent);
+}
+
+/* Day filter + lesson days */
+
+.day-filter {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.day-chip,
+.day-toggle {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.day-chip-active,
+.day-toggle-on {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.day-chip-today:not(.day-chip-active) {
+  border-color: var(--accent);
+}
+
+.day-chip-empty {
+  color: var(--muted);
+}
+
+.day-count {
+  opacity: 0.7;
+  margin-left: 0.15rem;
+}
+
+.pill-days {
+  background: #eef1f8;
+  color: #3a4a7a;
+}
+
+.day-picker {
+  border: none;
+  padding: 0;
+  margin: 0 0 0.75rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.day-picker legend {
+  font-size: 0.9rem;
+  color: var(--muted);
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+
+/* Student README */
+
+.profile-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.profile-status p {
+  margin: 0;
+}
+
+.profile-status-line {
+  font-weight: 600;
+}
+
+.profile-status-actions,
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.profile-actions {
+  margin-top: 0.5rem;
+}
+
+.profile-editor {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.notice {
+  background: #fff6e0;
+  border: 1px solid #ecd9a0;
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+}
+
+.profile-history ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.profile-history li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Insights */
+
+.insights-search {
+  margin: 1rem 0;
+}
+
+.insight-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.insight-item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.insight-item-header .secondary {
+  margin-left: auto;
+}
