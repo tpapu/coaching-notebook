@@ -32,9 +32,22 @@ async function describeFunctionError(error: Error): Promise<string> {
   return error.message || 'coach-ai request failed'
 }
 
-async function invokeCoachAi<T>(body: Record<string, unknown>): Promise<T> {
+async function invokeCoachAi<T>(body: Record<string, unknown>, isRetry = false): Promise<T> {
   const { data, error } = await supabase.functions.invoke<T>('coach-ai', { body })
   if (error) {
+    // A stale access token shows up as 401 even though the refresh token
+    // underneath is usually still good. Refresh once and retry before
+    // bothering the coach with an error — most of the time they never see it.
+    if (!isRetry && error instanceof FunctionsHttpError && error.context.status === 401) {
+      const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession()
+      if (!refreshError && refreshed.session) {
+        return invokeCoachAi<T>(body, true)
+      }
+      // The refresh token itself is dead — no amount of retrying will help,
+      // so send the coach back to the login screen instead of looping.
+      await supabase.auth.signOut()
+      throw new Error('Your session expired. Please sign in again.')
+    }
     throw new Error(await describeFunctionError(error))
   }
   if (!data) {
