@@ -232,6 +232,11 @@ label {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.4rem;
+  cursor: pointer;
+}
+
+.log-entry-list details[open] .log-entry-header {
+  margin-bottom: 0.6rem;
 }
 
 .log-entry-date {
@@ -336,13 +341,16 @@ label {
   margin-bottom: 0.4rem;
   color: var(--muted);
   font-size: 0.85rem;
+  cursor: pointer;
 }
 
-.lesson-plan-content-preview {
+.lesson-plan-list details[open] .lesson-plan-list-header {
+  margin-bottom: 0.6rem;
+}
+
+.lesson-plan-content-full {
   margin: 0;
   white-space: pre-wrap;
-  max-height: 6rem;
-  overflow: hidden;
 }
 
 /* Hover for outlined controls: the global button:hover fills with dark green,

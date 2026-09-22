@@ -8,8 +8,9 @@ export function LogEntryList({ logs }: { logs: SessionLog[] }) {
 
   return (
     <ul className="log-entry-list">
-      {logs.map((log) => (
-        <LogEntryItem key={log.id} log={log} />
+      {logs.map((log, index) => (
+        // Most recent open by default so saving feels confirmed; older ones stay collapsed to avoid clutter.
+        <LogEntryItem key={log.id} log={log} defaultOpen={index === 0} />
       ))}
     </ul>
   )

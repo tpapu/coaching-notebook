@@ -84,13 +84,16 @@ export function LessonPlanPane({ studentId }: { studentId: string }) {
           <p className="muted">No saved lesson plans yet.</p>
         ) : (
           <ul className="lesson-plan-list">
-            {pastPlans.map((plan) => (
+            {pastPlans.map((plan, index) => (
               <li key={plan.id} className="card">
-                <div className="lesson-plan-list-header">
-                  <span>{new Date(plan.generated_at).toLocaleDateString()}</span>
-                  {plan.used && <span className="pill pill-muted">Used</span>}
-                </div>
-                <p className="lesson-plan-content-preview">{plan.content}</p>
+                {/* Most recent open by default so saving feels confirmed; older ones stay collapsed to avoid clutter. */}
+                <details open={index === 0}>
+                  <summary className="lesson-plan-list-header">
+                    <span>{new Date(plan.generated_at).toLocaleDateString()}</span>
+                    {plan.used && <span className="pill pill-muted">Used</span>}
+                  </summary>
+                  <p className="lesson-plan-content-full">{plan.content}</p>
+                </details>
               </li>
             ))}
           </ul>
