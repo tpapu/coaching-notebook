@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react'
 import type { Student } from '../types'
 import { createStudent, listStudents } from '../lib/db'
-import { describeDayFilter, matchesDayFilter, studentDays, todayDayIndex, type DayFilter } from '../lib/days'
+import {
+  dayFilterLabel,
+  describeDayFilter,
+  matchesDayFilter,
+  studentDays,
+  todayDayIndex,
+  type DayFilter,
+} from '../lib/days'
 import { supabase } from '../lib/supabaseClient'
 import { StudentTabBar } from './StudentTabBar'
 import { StudentTabPanel } from './StudentTabPanel'
@@ -85,10 +92,18 @@ export function TabShell() {
 
   const showHistoryColumn = topLevelTab === 'student' && paneHasHistory
 
+  const rosterNames = students
+    .filter((s) => !s.archived && matchesDayFilter(s, dayFilter))
+    .map((s) => s.name)
+  const rosterText = rosterNames.length ? rosterNames.join(', ') : 'No students'
+
   return (
     <div className="app-shell">
       <header className="app-header">
-        <h1>Coaching Notebook</h1>
+        {/* The day's/filtered roster, in place of a static app title — see index.html for the actual browser-tab title. */}
+        <h1 className="roster-heading" title={`${dayFilterLabel(dayFilter)}: ${rosterText}`}>
+          <span className="roster-day">{dayFilterLabel(dayFilter)}:</span> {rosterText}
+        </h1>
         <button className="secondary small" onClick={() => supabase.auth.signOut()}>
           Sign out
         </button>

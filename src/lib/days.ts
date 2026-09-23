@@ -37,3 +37,10 @@ export function describeDayFilter(filter: DayFilter): string {
   if (filter === 'unscheduled') return 'without a lesson day'
   return `on ${DAY_LONG[filter]}`
 }
+
+/** Short label for the day filter, for headings/chips: "All", "Unscheduled", "Tuesday". */
+export function dayFilterLabel(filter: DayFilter): string {
+  if (filter === 'all') return 'All'
+  if (filter === 'unscheduled') return 'Unscheduled'
+  return DAY_LONG[filter]
+}
