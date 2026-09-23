@@ -15,8 +15,14 @@
   box-sizing: border-box;
 }
 
+/* The padding-right reserves room for the fixed session-history/lesson-plan
+   sidebar (see .pane-sidebar) so .tab-shell's margin: 0 auto centers the
+   main column in the remaining left region instead of the full window
+   width. Cancelled in the matching @media(max-width: 1400px) block below,
+   where the sidebar stops floating and goes back into the normal flow. */
 body {
   margin: 0;
+  padding-right: 400px;
   background: var(--bg);
   color: var(--text);
 }
@@ -237,17 +243,23 @@ label {
 
 .pane-sidebar {
   position: fixed;
-  /* Clears the app header + Sign out button, which sit in this same corner. */
+  /* top clears the app header + Sign out button, which sit in this same
+     corner; bottom (instead of a max-height) stretches the panel all the
+     way down to the window edge so it fills the full available height. */
   top: 6rem;
+  bottom: 1.5rem;
   right: 1.5rem;
   width: 320px;
-  max-height: min(70vh, 40rem);
   overflow-y: auto;
   padding-right: 0.25rem;
   z-index: 5;
 }
 
 @media (max-width: 1400px) {
+  body {
+    padding-right: 0;
+  }
+
   .pane-layout {
     display: flex;
     align-items: flex-start;
@@ -264,8 +276,10 @@ label {
   .pane-sidebar {
     position: static;
     width: auto;
+    height: auto;
     flex: 2 1 280px;
     max-width: 380px;
+    max-height: min(70vh, 40rem);
   }
 }
 
