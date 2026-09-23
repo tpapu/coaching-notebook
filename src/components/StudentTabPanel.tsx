@@ -1,8 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Student } from '../types'
 import { getStudent } from '../lib/db'
 import { updateStudentProfile, type ProfileUpdateMode } from '../lib/coachAi'
-import { StudentHeader } from './StudentHeader'
 import { LogPane } from './LogPane'
 import { ProfilePane } from './ProfilePane'
 import { ChatPane } from './ChatPane'
@@ -13,23 +12,33 @@ type SubTab = 'logs' | 'profile' | 'chat' | 'plan'
 interface Props {
   student: Student
   onStudentChange: (updated: Student) => void
+  /** The right-hand column's DOM node (owned by TabShell) that panes portal their history content into. */
+  historyContainer: HTMLElement | null
+  /** Lets TabShell collapse the history column when the active sub-tab has none (Coach Chat). */
+  onActivePaneChange?: (hasHistory: boolean) => void
 }
 
 /**
  * Per-student workspace (TabShell mounts one per student, keyed by id). Each
  * sub-pane fetches its own data lazily — nothing loads until its tab is
  * opened, and once opened it stays mounted so switching back doesn't refetch.
+ * Session Logs, README and Lesson Plan additionally portal a history list
+ * into `historyContainer`; Coach Chat has none.
  *
  * This component also owns the README sync, since it is triggered from the
  * Logs tab (after saving a log) but shown on the README tab.
  */
-export function StudentTabPanel({ student, onStudentChange }: Props) {
+export function StudentTabPanel({ student, onStudentChange, historyContainer, onActivePaneChange }: Props) {
   const [subTab, setSubTab] = useState<SubTab>('logs')
   const [visited, setVisited] = useState<Set<SubTab>>(new Set(['logs']))
   const [syncing, setSyncing] = useState(false)
   const [syncError, setSyncError] = useState<string | null>(null)
   const inFlight = useRef(false)
   const runAgain = useRef(false)
+
+  useEffect(() => {
+    onActivePaneChange?.(subTab !== 'chat')
+  }, [subTab, onActivePaneChange])
 
   function selectTab(tab: SubTab) {
     setSubTab(tab)
@@ -67,8 +76,6 @@ export function StudentTabPanel({ student, onStudentChange }: Props) {
 
   return (
     <div className="student-tab-panel">
-      <StudentHeader student={student} onChange={onStudentChange} />
-
       <div className="sub-tab-bar">
         <button className={subTab === 'logs' ? 'tab tab-active' : 'tab'} onClick={() => selectTab('logs')}>
           Session Logs
@@ -97,7 +104,12 @@ export function StudentTabPanel({ student, onStudentChange }: Props) {
       <div className="sub-tab-content">
         {visited.has('logs') && (
           <div hidden={subTab !== 'logs'}>
-            <LogPane studentId={student.id} onLogSaved={() => void syncProfile()} />
+            <LogPane
+              studentId={student.id}
+              onLogSaved={() => void syncProfile()}
+              historyContainer={historyContainer}
+              isActive={subTab === 'logs'}
+            />
           </div>
         )}
         {visited.has('profile') && (
@@ -107,6 +119,8 @@ export function StudentTabPanel({ student, onStudentChange }: Props) {
               syncing={syncing}
               onSync={(mode) => void syncProfile(mode)}
               onStudentChange={onStudentChange}
+              historyContainer={historyContainer}
+              isActive={subTab === 'profile'}
             />
           </div>
         )}
@@ -117,7 +131,7 @@ export function StudentTabPanel({ student, onStudentChange }: Props) {
         )}
         {visited.has('plan') && (
           <div hidden={subTab !== 'plan'}>
-            <LessonPlanPane studentId={student.id} />
+            <LessonPlanPane studentId={student.id} historyContainer={historyContainer} isActive={subTab === 'plan'} />
           </div>
         )}
       </div>

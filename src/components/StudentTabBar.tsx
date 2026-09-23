@@ -1,23 +1,35 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import type { Student } from '../types'
 import { DAY_ORDER, DAY_SHORT, matchesDayFilter, todayDayIndex, type DayFilter } from '../lib/days'
+import { StudentHeader } from './StudentHeader'
 
 interface Props {
   students: Student[]
   activeStudentId: string | null
   activeTopLevelTab: 'student' | 'insights'
   dayFilter: DayFilter
+  /** The active student's header card renders here, or null on the Insights tab. */
+  activeStudent: Student | null
+  onStudentChange: (updated: Student) => void
   onSelectStudent: (id: string) => void
   onSelectInsights: () => void
   onSelectDay: (filter: DayFilter) => void
   onAddStudent: (name: string) => Promise<void>
 }
 
+/**
+ * The app's persistent left column (see .col-nav in index.css): day filter,
+ * student list, Insights Library link, and — when a student is active — that
+ * student's editable header card. Stacked vertically since it's a narrow
+ * column, not a horizontal bar.
+ */
 export function StudentTabBar({
   students,
   activeStudentId,
   activeTopLevelTab,
   dayFilter,
+  activeStudent,
+  onStudentChange,
   onSelectStudent,
   onSelectInsights,
   onSelectDay,
@@ -29,7 +41,6 @@ export function StudentTabBar({
 
   const active = students.filter((s) => !s.archived)
   const archived = students.filter((s) => s.archived)
-  const visible = active.filter((s) => matchesDayFilter(s, dayFilter))
   const today = todayDayIndex()
   const unscheduledCount = active.filter((s) => matchesDayFilter(s, 'unscheduled')).length
 
@@ -67,7 +78,7 @@ export function StudentTabBar({
   }
 
   return (
-    <nav className="student-tab-bar">
+    <nav className="col-nav">
       <div className="day-filter" role="group" aria-label="Filter students by lesson day">
         {dayChip('all', 'All', active.length)}
         {DAY_ORDER.map((day) =>
@@ -76,12 +87,13 @@ export function StudentTabBar({
         {unscheduledCount > 0 && dayChip('unscheduled', 'Unscheduled', unscheduledCount)}
       </div>
 
-      <div className="tab-group">
-        {visible.map((student) => (
+      <div className="student-list">
+        {active.map((student) => (
           <button
             key={student.id}
             className={
-              'tab' + (activeTopLevelTab === 'student' && activeStudentId === student.id ? ' tab-active' : '')
+              'nav-item' +
+              (activeTopLevelTab === 'student' && activeStudentId === student.id ? ' nav-item-active' : '')
             }
             onClick={() => onSelectStudent(student.id)}
           >
@@ -105,7 +117,7 @@ export function StudentTabBar({
             </button>
           </form>
         ) : (
-          <button className="tab tab-add" onClick={() => setAdding(true)}>
+          <button className="nav-item nav-item-add" onClick={() => setAdding(true)}>
             + Student
           </button>
         )}
@@ -118,8 +130,8 @@ export function StudentTabBar({
             <button
               key={student.id}
               className={
-                'tab tab-archived' +
-                (activeTopLevelTab === 'student' && activeStudentId === student.id ? ' tab-active' : '')
+                'nav-item' +
+                (activeTopLevelTab === 'student' && activeStudentId === student.id ? ' nav-item-active' : '')
               }
               onClick={() => onSelectStudent(student.id)}
             >
@@ -129,14 +141,14 @@ export function StudentTabBar({
         </details>
       )}
 
-      <div className="tab-group tab-group-right">
-        <button
-          className={'tab' + (activeTopLevelTab === 'insights' ? ' tab-active' : '')}
-          onClick={onSelectInsights}
-        >
-          Insights Library
-        </button>
-      </div>
+      <button
+        className={'nav-item nav-item-insights' + (activeTopLevelTab === 'insights' ? ' nav-item-active' : '')}
+        onClick={onSelectInsights}
+      >
+        Insights Library
+      </button>
+
+      {activeStudent && <StudentHeader student={activeStudent} onChange={onStudentChange} />}
     </nav>
   )
 }

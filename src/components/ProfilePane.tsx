@@ -1,4 +1,5 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
+import { createPortal } from 'react-dom'
 import type { ProfileVersion, Student } from '../types'
 import type { ProfileUpdateMode } from '../lib/coachAi'
 import { countUnsyncedLogs, listProfileVersions, updateStudent } from '../lib/db'
@@ -8,9 +9,13 @@ interface Props {
   syncing: boolean
   onSync: (mode: ProfileUpdateMode) => void
   onStudentChange: (updated: Student) => void
+  /** The right-hand column DOM node to portal "Previous versions" into. */
+  historyContainer: HTMLElement | null
+  /** Only portal while this is the visible sub-tab, since a hidden ancestor doesn't hide a portal's target. */
+  isActive: boolean
 }
 
-export function ProfilePane({ student, syncing, onSync, onStudentChange }: Props) {
+export function ProfilePane({ student, syncing, onSync, onStudentChange, historyContainer, isActive }: Props) {
   const saved = student.profile_md ?? ''
   const [draft, setDraft] = useState(saved)
   // The README text the editor was last in step with; draft !== baseline means unsaved edits.
@@ -105,7 +110,7 @@ export function ProfilePane({ student, syncing, onSync, onStudentChange }: Props
   else if (hasReadme) status = 'Up to date with all session logs'
 
   return (
-    <section className="profile-pane">
+    <>
       <div className="card profile-status">
         <div>
           {status && <p className="profile-status-line">{status}</p>}
@@ -160,22 +165,31 @@ export function ProfilePane({ student, syncing, onSync, onStudentChange }: Props
         </div>
       </div>
 
-      {versions.length > 0 && (
-        <details className="card profile-history">
-          <summary>Previous versions ({versions.length})</summary>
-          <ul>
-            {versions.map((version) => (
-              <li key={version.id}>
-                <span>{new Date(version.saved_at).toLocaleString()}</span>
-                <button className="secondary small" onClick={() => setDraft(version.content)}>
-                  Load into editor
-                </button>
-              </li>
-            ))}
-          </ul>
-          <p className="muted small">Loading a version only fills the editor — nothing changes until you save.</p>
-        </details>
-      )}
-    </section>
+      {isActive &&
+        historyContainer &&
+        createPortal(
+          <>
+            <h3>Previous versions</h3>
+            {versions.length === 0 ? (
+              <p className="muted small">No previous versions yet.</p>
+            ) : (
+              <>
+                <ul className="profile-history-list">
+                  {versions.map((version) => (
+                    <li key={version.id}>
+                      <span>{new Date(version.saved_at).toLocaleString()}</span>
+                      <button className="secondary small" onClick={() => setDraft(version.content)}>
+                        Load into editor
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="muted small">Loading a version only fills the editor — nothing changes until you save.</p>
+              </>
+            )}
+          </>,
+          historyContainer,
+        )}
+    </>
   )
 }

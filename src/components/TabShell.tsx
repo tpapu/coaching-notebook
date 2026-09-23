@@ -9,6 +9,17 @@ import { InsightsBrowser } from './InsightsBrowser'
 
 type TopLevelTab = 'student' | 'insights'
 
+/**
+ * Three-column app shell: StudentTabBar (day filter, student list, and the
+ * active student's header card) on the left, the active pane's main content
+ * in the middle, and that pane's history/list content on the right.
+ *
+ * The right column is a single DOM node (`historyEl`) that StudentTabPanel's
+ * children portal their history content into — see LogPane / ProfilePane /
+ * LessonPlanPane. Coach Chat has no history list, so `paneHasHistory` (kept
+ * in sync by StudentTabPanel) collapses that column and widens the middle
+ * one when it's showing.
+ */
 export function TabShell() {
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
@@ -16,6 +27,8 @@ export function TabShell() {
   const [activeStudentId, setActiveStudentId] = useState<string | null>(null)
   const [topLevelTab, setTopLevelTab] = useState<TopLevelTab>('student')
   const [dayFilter, setDayFilter] = useState<DayFilter>('all')
+  const [historyEl, setHistoryEl] = useState<HTMLElement | null>(null)
+  const [paneHasHistory, setPaneHasHistory] = useState(true)
 
   useEffect(() => {
     listStudents()
@@ -70,8 +83,10 @@ export function TabShell() {
     }
   }
 
+  const showHistoryColumn = topLevelTab === 'student' && paneHasHistory
+
   return (
-    <div className="tab-shell">
+    <div className="app-shell">
       <header className="app-header">
         <h1>Coaching Notebook</h1>
         <button className="secondary small" onClick={() => supabase.auth.signOut()}>
@@ -79,40 +94,52 @@ export function TabShell() {
         </button>
       </header>
 
-      <StudentTabBar
-        students={students}
-        activeStudentId={activeStudentId}
-        activeTopLevelTab={topLevelTab}
-        dayFilter={dayFilter}
-        onSelectStudent={(id) => {
-          setActiveStudentId(id)
-          setTopLevelTab('student')
-        }}
-        onSelectInsights={() => setTopLevelTab('insights')}
-        onSelectDay={handleSelectDay}
-        onAddStudent={handleAddStudent}
-      />
+      <div className={'workspace' + (showHistoryColumn ? '' : ' workspace-no-history')}>
+        <StudentTabBar
+          students={students}
+          activeStudentId={activeStudentId}
+          activeTopLevelTab={topLevelTab}
+          dayFilter={dayFilter}
+          activeStudent={topLevelTab === 'student' ? activeStudent : null}
+          onStudentChange={handleStudentChange}
+          onSelectStudent={(id) => {
+            setActiveStudentId(id)
+            setTopLevelTab('student')
+          }}
+          onSelectInsights={() => setTopLevelTab('insights')}
+          onSelectDay={handleSelectDay}
+          onAddStudent={handleAddStudent}
+        />
 
-      <main className="app-main">
-        {error && <p className="error">{error}</p>}
-        {loading && <p className="muted">Loading students…</p>}
+        <main className="col-main">
+          {error && <p className="error">{error}</p>}
+          {loading && <p className="muted">Loading students…</p>}
 
-        {!loading && topLevelTab === 'insights' && <InsightsBrowser students={students} />}
+          {!loading && topLevelTab === 'insights' && <InsightsBrowser students={students} />}
 
-        {!loading && topLevelTab === 'student' && activeStudent && (
-          // Keyed so every student gets a fresh panel: the edit form, README
-          // editor and sync state must never carry over from another student.
-          <StudentTabPanel key={activeStudent.id} student={activeStudent} onStudentChange={handleStudentChange} />
-        )}
+          {!loading && topLevelTab === 'student' && activeStudent && (
+            // Keyed so every student gets a fresh panel: the sub-tab, README
+            // editor and sync state must never carry over from another student.
+            <StudentTabPanel
+              key={activeStudent.id}
+              student={activeStudent}
+              onStudentChange={handleStudentChange}
+              historyContainer={historyEl}
+              onActivePaneChange={setPaneHasHistory}
+            />
+          )}
 
-        {!loading && topLevelTab === 'student' && !activeStudent && (
-          <p className="muted">
-            {students.some((s) => !s.archived)
-              ? `No students ${describeDayFilter(dayFilter)} yet. Add one with + Student, or set a student's lesson days from their Edit form.`
-              : 'Add a student to get started.'}
-          </p>
-        )}
-      </main>
+          {!loading && topLevelTab === 'student' && !activeStudent && (
+            <p className="muted">
+              {students.some((s) => !s.archived)
+                ? `No students ${describeDayFilter(dayFilter)} yet. Add one with + Student, or set a student's lesson days from their Edit form.`
+                : 'Add a student to get started.'}
+            </p>
+          )}
+        </main>
+
+        <aside className="col-history" ref={setHistoryEl} hidden={!showHistoryColumn} />
+      </div>
     </div>
   )
 }
