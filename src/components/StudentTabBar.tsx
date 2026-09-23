@@ -149,7 +149,11 @@ export function StudentTabBar({
         Insights Library
       </button>
 
-      {activeStudent && <StudentHeader student={activeStudent} onChange={onStudentChange} />}
+      {/* Keyed so switching students remounts the form fresh — StudentHeader
+          keeps its edit-in-progress fields in local state, which otherwise
+          only initializes once and would keep showing (and saving under a
+          new student's id) whichever student was previously being edited. */}
+      {activeStudent && <StudentHeader key={activeStudent.id} student={activeStudent} onChange={onStudentChange} />}
     </nav>
   )
 }
