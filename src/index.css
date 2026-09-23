@@ -253,6 +253,10 @@ label {
   overflow-y: auto;
   padding-right: 0.25rem;
   z-index: 5;
+  /* Makes the full-height panel visible as a panel rather than just an
+     invisible scroll boundary floating over the page background. */
+  border-left: 1px solid var(--border);
+  padding-left: 1.25rem;
 }
 
 @media (max-width: 1400px) {
@@ -288,6 +292,13 @@ label {
   .pane-sidebar {
     flex: 1 1 100%;
     max-width: none;
+  }
+
+  /* The divider only reads as a sidebar boundary when it's actually beside
+     the main content; stacked below it, it would just be a stray line. */
+  .pane-sidebar {
+    border-left: none;
+    padding-left: 0;
   }
 }
 
