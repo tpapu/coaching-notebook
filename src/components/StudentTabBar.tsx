@@ -41,6 +41,7 @@ export function StudentTabBar({
 
   const active = students.filter((s) => !s.archived)
   const archived = students.filter((s) => s.archived)
+  const visible = active.filter((s) => matchesDayFilter(s, dayFilter))
   const today = todayDayIndex()
   const unscheduledCount = active.filter((s) => matchesDayFilter(s, 'unscheduled')).length
 
@@ -88,7 +89,7 @@ export function StudentTabBar({
       </div>
 
       <div className="student-list">
-        {active.map((student) => (
+        {visible.map((student) => (
           <button
             key={student.id}
             className={
