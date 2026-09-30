@@ -9,6 +9,28 @@ This app is built for one coach (one login) running their own Supabase
 project and their own Anthropic API key — there's no multi-tenant account
 system, billing, or public sign-up.
 
+## Screenshots
+
+**Day filter** — students grouped by lesson day, with counts per day:
+
+![Day filter with no students yet](docs/screenshots/01-day-filter.png)
+
+**Session Logs** — log a lesson, with history in its own scrollable column on the right:
+
+![Session Logs tab](docs/screenshots/02-session-logs.png)
+
+**Student README** — the living profile the AI reads instead of the full log history, kept up to date automatically as new logs come in:
+
+![README tab](docs/screenshots/03-readme.png)
+
+**Coach Chat** — ask about drills, patterns, or anything about this specific student:
+
+![Coach Chat tab](docs/screenshots/04-coach-chat.png)
+
+**Lesson Plan** — generate a plan grounded in session history and saved coaching insights:
+
+![Lesson Plan tab](docs/screenshots/05-lesson-plan.png)
+
 ## Stack
 
 - **Frontend:** React + TypeScript, built with Vite. Plain React state and
